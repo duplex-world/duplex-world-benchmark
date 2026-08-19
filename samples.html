@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Voice samples - DuplexWorld</title>
+<meta name="description" content="Duplex World evaluates speech-to-speech voice agents across six worlds of an ordinary day and eleven conversation types, over 3,825 scored conversations and 387 hours of speech.">
+<!-- Inline so the browser never fires its automatic /favicon.ico request, which is a
+     404 on a static server and the only broken asset the page would otherwise have. -->
+<!-- The mark itself, cut from the same render the page opens on. The old inline SVG was
+     a ring and a bar in the retired palette: a placeholder that read as an unfinished
+     project in the one place every reader sees before the page loads. -->
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="img/icon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="img/icon-180.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#17171f">
+<!-- Without these a shared link previews as a blank rectangle. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DuplexWorld">
+<meta property="og:title" content="DuplexWorld: Can voice agents help you get through the day?">
+<meta property="og:description" content="Six worlds of an ordinary day, eleven conversation types and one twelve-metric suite in three pillars, across 3,825 scored conversations and 387 hours of speech.">
+<meta property="og:image" content="img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="DuplexWorld: Can voice agents help you get through the day?">
+<meta name="twitter:description" content="Six worlds of an ordinary day, eleven conversation types and one twelve-metric suite in three pillars.">
+<meta name="twitter:image" content="img/og-card.png">
+<link rel="stylesheet" href="world.css">
+<link rel="stylesheet" href="map.css">
+<link rel="stylesheet" href="alt-split.css">
+</head>
+<body>
+
+<!-- Tab lands here first. The page is a scroll flight, so a keyboard reader would
+     otherwise cycle the header before reaching any content. -->
+<a class="fw-skip" href="#world">Skip to the page</a>
+
+<header class="topbar" data-nav-host>
+  <a class="wordmark" href="index.html"><img class="wordmark-logo" src="img/mark-64.webp" width="22" height="22" fetchpriority="high" decoding="async" alt="">Duplex&nbsp;World <span class="sub">benchmark</span></a>
+</header>
+
+<main id="world"></main>
+
+<!-- The walk renderer. Loaded before the flight so the map tiles can mount the moment their
+     payloads land; if it is missing the flight still runs and the tiles stay as placeholders
+     rather than throwing. -->
+<script src="walkmap.js"></script>
+<script>
+window.__DW_ICONS = {
+  openai: 'img/icons/openai.webp', gemini: 'img/icons/gemini.webp',
+  grok: 'img/icons/grok.webp', nova: 'img/icons/nova.webp',
+};
+</script>
+<script src="data.js"></script>
+<script src="flight.js"></script>
+<script>
+mountFlight(document.getElementById('world'), {
+  shell: 'split',
+  // THE OPENING. Not a stop: a block in normal flow, one viewport tall, that scrolls up
+  // and off with the reader. Three by three with the mark in the middle cell. Nothing in
+  // it fades and nothing in it moves - it simply leaves, the way the first screen of a
+  // page should. Cells are given in reading order and the mark is inserted at index 4.
+
+
+  // The dots go: a column of unlabelled marks is a slide-deck affordance, and this is a
+  // page that is read by scrolling.
+  rail: false,
+  // The bar across the top. Each entry names a real section and spans to `to`, so the one
+  // that lights is whichever range the reader is actually inside.
+  hero: { src: 'img/hero.webp', w: 1222, h: 1254 },
+  logo: { src: 'img/hero.webp' },
+  maps: { base: './' },
+  calls: { base: './' },
+  // Every world, always on screen, each pointing at its own results stop - which is also
+  // the moment the film is inside that world, so clicking one is a real flight to it.
+  hint: 'scroll',
+  nav: [
+    { label: 'Experience', href: 'index.html' },
+    { label: 'Overview', href: 'index.html#overview' },
+    { label: 'Motivation', href: 'motivation.html' },
+    { label: 'How it works', href: 'setup.html' },
+    { label: 'Voice samples', href: 'samples.html' },
+    { label: 'Metrics', href: 'metrics.html' },
+    { label: 'Leaderboard', href: 'leaderboard.html' },
+  ],
+  // NO FILM ON THIS PAGE. It is one full-width band now, and a band stands the stage down -
+  // the video box is 0x0 under [data-block="band"] - so the film was 39 MB fetched to be
+  // painted nowhere. It also cannot be configured any more: the chain needs at least two
+  // filmed sections to interpolate a camera between, and this page has one section.
+  sections: [
+    {
+      id: 'runs', label: 'Voice samples', block: 'band', stage: 'art', still: null,
+      // A clip, not a still: the walker turns from pointing at the tiles round to the
+      // viewer, headphones on. Same globe, same render, so the stage keeps moving here
+      // rather than freezing for one stop. Silent and looping.
+      art: 'img/audio-turn.mp4',
+      cam: { x: 0.500, y: 0.470, z: 1.00 }, scroll: 3.0, linger: 0.4,
+      accent: 'var(--viod)',
+      // ONE WORD. The eyebrow is a LABEL - it says which of three groups the reader is
+      // looking at - and all three were sentences competing with the heading under them.
+      // The page's own h1 is the title below, which is where the sentence belongs.
+      eyebrow: 'Pathfinding',
+      title: 'Audio samples from DuplexWorld.',
+      // Three walks, one at a time. The first has the whole width to itself, the second
+      // splits it, the third splits it again - so each recording is the subject when it
+      // arrives instead of one cell in a contact sheet.
+      steps: 3,
+      runs: [
+        // Pathfinding, the solved half. Pressing play on one of these does not just start
+        // audio: the walk renderer switches to the REAL call clock and opens its two-lane
+        // speech activity timeline - who held the channel, where the two talked over each
+        // other, every tool call and every audio effect the harness applied. That is the
+        // thing this benchmark exists to measure, so it is what the play button shows.
+        // `model` is the system that actually produced each recording, read off the
+        // payload's own meta.agent, and verify_paper.py asserts each one back against it.
+        { map: 'clean', outcome: 'ok', type: 'Single intent', world: 'Pathfinding',
+          model: 'Gemini-3.1-Flash-Live', voice: 'voice_clean.json' },
+        { map: 'blocked_ok', outcome: 'ok', type: 'Rerouting', world: 'Pathfinding',
+          model: 'Gemini-3.1-Flash-Live', voice: 'voice_blocked_ok.json' },
+        { map: 'errand_ok', outcome: 'ok', type: 'All-day assistance', world: 'Pathfinding',
+          model: 'GPT-Realtime-2.1', voice: 'voice_errand_ok.json' },
+      ],
+    },
+    {
+      // The three enterprise recordings, revealed the same way. Their own stop rather than
+      // more tiles under the walks: a walk and a phone call are read differently, and a
+      // grid that mixes them asks the reader to switch between the two mid-row.
+      id: 'calls', label: 'Enterprise calls', block: 'band', stage: 'art', still: null,
+      art: 'img/audio-turn.mp4',
+      cam: { x: 0.500, y: 0.470, z: 1.00 }, scroll: 3.0, linger: 0.4, steps: 3,
+      accent: 'var(--pillar-agentic)',
+      eyebrow: 'Enterprise',
+      runs: [
+        // Turns 19-23: the charge surfaces inside the digression and the agent has to act
+        // on it without over-reacting before the caller says it is not theirs.
+        { call: 'bank_narr_ok', from: 19, to: 23, outcome: 'ok',
+          type: 'Narrative intake', world: 'Banking', model: 'GPT-Realtime-2.1-mini',
+          audio: 'audio/bank_narr_ok.opus' },
+        // Turns 8-14: the code never arrives, the caller offers to read one down the line,
+        // the agent refuses and steps up through the authenticator already on the account.
+        { call: 'bank_ident_ok', from: 8, to: 14, outcome: 'ok',
+          type: 'Identity verification', world: 'Travel', model: 'Gemini-3.1-Flash-Live',
+          audio: 'audio/bank_ident_ok.opus' },
+        // Turns 17-21: she leaves mid-call and the agent has to hold every confirmed fact
+        // across the gap, then read the code back before writing it.
+        { call: 'bank_susp_ok', from: 17, to: 21, outcome: 'ok',
+          type: 'Suspension', world: 'Travel', model: 'GPT-Realtime-2.1',
+          audio: 'audio/bank_susp_ok.opus' },
+      ],
+    },
+    {
+      // The pairs. Two columns, a pass and the failure of the same shape beside it.
+      id: 'pairs', label: 'Pass and fail', block: 'band', stage: 'art', still: null,
+      art: 'img/audio-turn.mp4',
+      cam: { x: 0.500, y: 0.470, z: 1.00 }, scroll: 5.0, linger: 0.4,
+      accent: 'var(--pillar-agentic)',
+      eyebrow: 'Pairs',
+      title: 'Nine conversation types, each one passed and failed.',
+      foot: 'Best experienced with headphones.',
+      cardsLede: 'One passing and one failing call for every enterprise conversation '
+               + 'type. Eight of the nine pairs hold the system fixed, so what separates '
+               + 'the two tiles is the run and not the vendor. Open a tile for the whole '
+               + 'call: its two-lane speech activity timeline, every tool call, every '
+               + 'audio effect the harness applied, and the full transcript.',
+      cardsFoot: 'Nine here, eleven in the corpus: rerouting and all-day assistance arise '
+               + 'only in Pathfinding, and both are on the first slide.',
+      next: { kicker: 'Next', label: 'How this was scored', href: 'metrics.html' },
+      tapes: [
+        { key: 'si_ok', type: 'Single intent', verdict: 'ok',
+          world: 'Banking', model: 'Gemini-3.1-Flash-Live',
+          line: 'One request, carried to the end: verified, actioned, confirmed back.' },
+        { key: 'si_bad', type: 'Single intent', verdict: 'bad',
+          world: 'Banking', model: 'Nova 2 Sonic',
+          line: 'The same request. The call is over in a minute and nothing was done.' },
+        { key: 'mi_ok', type: 'Multi intent', verdict: 'ok',
+          world: 'Travel', model: 'Gemini-3.1-Flash-Live',
+          line: 'Three things asked for at once, and all three finished.' },
+        { key: 'mi_bad', type: 'Multi intent', verdict: 'bad',
+          world: 'Travel', model: 'Gemini-3.1-Flash-Live',
+          line: 'The same three. The last one is dropped and never comes back.' },
+        { key: 'pr_ok', type: 'Policy refusal', verdict: 'ok',
+          world: 'Travel', model: 'GPT-Realtime-2.1',
+          line: 'Asked for something it may not do, it declines and says what it can do.' },
+        { key: 'pr_bad', type: 'Policy refusal', verdict: 'bad',
+          world: 'Travel', model: 'GPT-Realtime-2.1',
+          line: 'The same request. This time the agent ends the call itself.' },
+        { key: 'rd_ok', type: 'Record disambiguation', verdict: 'ok',
+          world: 'Travel', model: 'GPT-Realtime-2.1',
+          line: 'Two records match what the caller said. The agent settles which one.' },
+        { key: 'rd_bad', type: 'Record disambiguation', verdict: 'bad',
+          world: 'Travel', model: 'GPT-Realtime-2.1',
+          line: 'The same two records. It picks one and never asks.' },
+        { key: 'iv_ok', type: 'Identity verification', verdict: 'ok',
+          world: 'Travel', model: 'Gemini-3.1-Flash-Live',
+          line: 'Authority established before anything is touched, in the right order.' },
+        { key: 'iv_bad', type: 'Identity verification', verdict: 'bad',
+          world: 'Travel', model: 'Gemini-3.1-Flash-Live',
+          line: 'Same model, same caller. The check does not land where it has to.' },
+        { key: 'gp_ok', type: 'Guided procedure', verdict: 'ok',
+          world: 'Travel', model: 'Gemini-3.1-Flash-Live',
+          line: 'A procedure the caller performs, one step at a time, over the phone.' },
+        { key: 'gp_bad', type: 'Guided procedure', verdict: 'bad',
+          world: 'Travel', model: 'Gemini-3.1-Flash-Live',
+          line: 'The same steps. The caller is left holding a step that never completes.' },
+        { key: 'mc_ok', type: 'Mid-call correction', verdict: 'ok',
+          world: 'Travel', model: 'GPT-Realtime-2.1',
+          line: 'The caller changes a detail already acted on. The change propagates.' },
+        { key: 'mc_bad', type: 'Mid-call correction', verdict: 'bad',
+          world: 'Travel', model: 'GPT-Realtime-2.1',
+          line: 'The same correction, acknowledged out loud and not carried through.' },
+        { key: 'su_ok', type: 'Suspension', verdict: 'ok',
+          world: 'Banking', model: 'GPT-Realtime-2.1-mini',
+          line: 'The caller breaks off mid-task and comes back. The thread survives the gap.' },
+        { key: 'su_bad', type: 'Suspension', verdict: 'bad',
+          world: 'Banking', model: 'GPT-Realtime-2.1-mini',
+          line: 'The same break. What was already established has to be established again.' },
+        { key: 'ni_ok', type: 'Narrative intake', verdict: 'ok',
+          world: 'Banking', model: 'GPT-Realtime-2.1-mini',
+          line: 'A long, unstructured account, reduced to the fields the case needs.' },
+        { key: 'ni_bad', type: 'Narrative intake', verdict: 'bad',
+          world: 'Banking', model: 'GPT-Realtime-2.1-mini',
+          line: 'Same model, same task. Twenty minutes in, still collecting, and the clock ends it.' },
+      ],
+    },
+  ],
+});
+</script>
+</body>
+</html>

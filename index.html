@@ -1,288 +1,242 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Talking someone through a city they cannot see</title>
-<meta name="description" content="A voice navigation benchmark: a spoken copilot guides an unseen pedestrian through Midtown East. Five production voice models, 225 scored conversations.">
-<link rel="stylesheet" href="assets/css/style.css">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Experience - DuplexWorld</title>
+<meta name="description" content="DuplexWorld: six worlds of an ordinary day, and five commercial voice agents trying to be useful inside them.">
+<!-- Inline so the browser never fires its automatic /favicon.ico request, which is a
+     404 on a static server and the only broken asset the page would otherwise have. -->
+<!-- The mark itself, cut from the same render the page opens on. The old inline SVG was
+     a ring and a bar in the retired palette: a placeholder that read as an unfinished
+     project in the one place every reader sees before the page loads. -->
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="img/icon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="img/icon-180.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#17171f">
+<!-- Without these a shared link previews as a blank rectangle. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DuplexWorld">
+<meta property="og:title" content="DuplexWorld: Can voice agents help you get through the day?">
+<meta property="og:description" content="Six worlds of an ordinary day, eleven conversation types and one twelve-metric suite in three pillars, across 3,825 scored conversations and 387 hours of speech.">
+<meta property="og:image" content="img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="DuplexWorld: Can voice agents help you get through the day?">
+<meta name="twitter:description" content="Six worlds of an ordinary day, eleven conversation types and one twelve-metric suite in three pillars.">
+<meta name="twitter:image" content="img/og-card.png">
+<link rel="stylesheet" href="world.css">
+<link rel="stylesheet" href="map.css">
+<link rel="stylesheet" href="alt-split.css">
 </head>
 <body>
 
-<header class="title">
-  <div class="wrap">
-    <p class="brand">Full-duplex voice benchmark</p>
-    <h1>Talking someone through a city they cannot see</h1>
-    <p class="tagline">A voice copilot holds the map. A pedestrian holds the street. Neither can
-    finish alone, so every block walked is a spoken instruction that survived a phone line.</p>
-    <p class="byline">Navigation world of a six-world full-duplex voice benchmark</p>
-    <p class="affil">225 scored conversations &middot; 5 production voice models &middot; collected 2026-07-28 to 2026-08-04</p>
-    <div class="buttons">
-      <a class="btn primary" href="data/appendix.md">Appendix</a>
-      <a class="btn" href="data/nav_per_episode.csv">Per-episode data</a>
-      <a class="btn" href="data/excerpts.md">Transcripts</a>
-      <a class="btn" href="#listen">Listen</a>
-    </div>
-  </div>
+<!-- Tab lands here first. The page is a scroll flight, so a keyboard reader would
+     otherwise cycle the header before reaching any content. -->
+<a class="fw-skip" href="#world">Skip to the page</a>
+
+<header class="topbar" data-nav-host>
+  <a class="wordmark" href="index.html"><img class="wordmark-logo" src="img/mark-64.webp" width="22" height="22" fetchpriority="high" decoding="async" alt="">Duplex&nbsp;World <span class="sub">benchmark</span></a>
 </header>
 
-<nav class="anchors"><div class="in">
-  <a href="#overview">Overview</a>
-  <a href="#world">The world</a>
-  <a href="#families">Task families</a>
-  <a href="#listen">Worked examples</a>
-  <a href="#results">Results</a>
-  <a href="#findings">Findings</a>
-  <a href="#scope">Scope and honesty</a>
-</div></nav>
+<main id="world"></main>
 
-<div class="wrap">
-
-<section id="overview">
-<p class="kicker">Overview</p>
-<h2>What the benchmark measures</h2>
-<p class="abstract">A spoken copilot must guide a pedestrian who cannot see a map to a destination
-in Midtown East. The copilot can query a real GeoJSON map and cannot see the street; the walker can
-see the street and has no map. The channel is full duplex telephony, so both parties speak
-whenever they like and neither waits its turn. Because the copilot's only self-operated sense
-returns position and never orientation, the task isolates something a text agent never faces:
-maintaining a shared model of an unseen physical situation, in real time, over a lossy channel.</p>
-
-<div class="stats">
-  <div class="stat"><b>225</b><span>scored conversations</span></div>
-  <div class="stat"><b>5</b><span>voice models</span></div>
-  <div class="stat"><b>9</b><span>scenarios, 5 runs each</span></div>
-  <div class="stat"><b>56.2</b><span>simulated hours</span></div>
-  <div class="stat"><b>95%</b><span>of failures are the clock</span></div>
-</div>
-</section>
-
-<section id="world">
-<p class="kicker">The world</p>
-<h2>Eight avenues, eight streets, and two things you cannot walk through</h2>
-<p>The map is a single GeoJSON <code>FeatureCollection</code>, the same interchange format a real
-mapping stack consumes: 105 blocks of pavement, 240 buildings, 31 named places, 5 named entrances,
-4 corners with a missing crosswalk, and 2 superblocks. Grand Central Terminal and the United Nations
-are where they really are, and both are impassable. Landmarks are real so the walker can plausibly
-see them; ordinary destinations are authored, so success depends on reading the map rather than on
-a model's memory of Manhattan.</p>
-
-<div class="callout">
-<p><b>The design decision everything turns on.</b> <code>get_gps</code> returns a position and never
-a heading. A copilot can know the walker stands at Park and E 45th and still not know whether "turn
-left" sends them north or south.</p>
-<p>Position can be looked up. Orientation has to be inferred from what the walker says. The models
-separate on exactly the quantity that cannot be queried.</p>
-</div>
-
-<p>The tool surface is split by hand, and the split is asymmetric. The walker holds nine tools,
-including both ways of perceiving the street. The copilot holds five. It cannot look around or read
-a sign; it can only ask, and then parse the answer off a degraded line.</p>
-
-<figure>
-  <img class="lt" src="assets/img/fig_tools_light.png" alt="The fourteen tools, grouped by function and colour-coded by whether the walker or the copilot holds them">
-  <img class="dk" src="assets/img/fig_tools_dark.png" alt="The fourteen tools, grouped by function and colour-coded by whether the walker or the copilot holds them">
-  <figcaption>Fourteen tools. The walker executes movement and perception; the copilot senses
-  position, queries the map, and records what it believes. <code>live_status()</code> is the only
-  way to learn about a closure without walking into one.</figcaption>
-</figure>
-
-<h3>Scoring space is not walking space</h3>
-<p>Manhattan blocks are not square. Crosstown, avenue to avenue, is 274 m; uptown, street to
-street, is 81 m, a true aspect ratio of 3.38 to 1. Scoring counts blocks because the block is the
-instruction unit, so a four-block crosstown leg and a four-block uptown leg score identically and
-differ by 3.4x on the ground.</p>
-
-<figure>
-  <img class="lt" src="assets/img/fig_scale_light.png" alt="The same eight by eight lattice drawn twice, once with equal spacing and once at true metric proportions">
-  <img class="dk" src="assets/img/fig_scale_dark.png" alt="The same eight by eight lattice drawn twice, once with equal spacing and once at true metric proportions">
-  <figcaption>Left, the lattice the scorer counts. Right, the same lattice at the proportions the
-  walker actually crosses.</figcaption>
-</figure>
-</section>
-
-<section id="families">
-<p class="kicker">Task families</p>
-<h2>Three kinds of conversation</h2>
-<p>Nine scenarios, three per family, five runs each. The number on each card is the optimal walk in
-blocks.</p>
-
-<div class="cards">
-  <div class="card"><div class="n">5</div><h4>Base</h4>
-    <p>One destination, clear map. Establish where the walker is and which way they face, then say
-    five correct things in sequence. Four distinct five-block routes exist; what the terminal forces
-    is the crossing, not the shape.</p></div>
-  <div class="card"><div class="n">7</div><h4>Rerouting</h4>
-    <p>Four pavement closures, none announced. Five blocks becomes seven. The copilot's map is
-    correct about geometry and wrong about passability, so the plan has to be repaired mid-walk.</p></div>
-  <div class="card"><div class="n">11</div><h4>Long horizon</h4>
-    <p>Two legs. The second destination does not exist in the brief and is revealed only on arrival
-    at the first, so a copilot that has just declared success must re-plan from a new position.</p></div>
-</div>
-
-<figure>
-  <img class="lt" src="assets/img/fig_cond_roadblock_light.png" alt="The rerouting scenario showing the clear-map route, four barricades, and the seven block detour that survives them">
-  <img class="dk" src="assets/img/fig_cond_roadblock_dark.png" alt="The rerouting scenario showing the clear-map route, four barricades, and the seven block detour that survives them">
-  <figcaption>Rerouting. Only two of the four closures cost blocks. The other two cut the number of
-  tied seven-block routes from four to one, so the optimum becomes unique and there is no margin for
-  a wrong turn. The difficulty is authored in two layers.</figcaption>
-</figure>
-</section>
-
-<section id="listen">
-<p class="kicker">Worked examples</p>
-<h2>Three real conversations</h2>
-<p>Unedited recordings from the campaign, both sides mixed, at the 8 kHz telephony quality the
-models heard. Transcript timings are from the recorded tick stream.</p>
-
-<div class="run">
-  <header><h3>1. The barricade</h3><span class="tag neutral">recovery</span></header>
-  <div class="meta">Grok Voice &middot; rerouting &middot; arrived &middot; 19 blocks against 7 optimal &middot; 13 min 54 s</div>
-  <audio controls preload="none" src="assets/audio/reroute_clip.mp3"></audio>
-  <p class="hint">70-second clip from 2:40, the moment the walk fails and is repaired.</p>
-  <div class="transcript"><b>167.6s  copilot</b>  Keep walking straight east on East 42nd Street.
-<b>177.4s  walker</b>   <i>walks into a barricade</i>
-<b>180.8s  walker</b>   The pavement is barricaded for construction, and there is no
-                 way through. I am still at Park Avenue and E 42nd Street.
-<b>191.2s  tool</b>     live_status() -> E 42nd Street closed between Park and Lexington
-<b>194.0s  copilot</b>  The closure is exactly on the block ahead of you. Turn left onto
-                 Park Avenue and head north for one block.</div>
-  <audio controls preload="none" src="assets/audio/reroute.mp3"></audio>
-  <p class="hint">The full call. It repairs twice and still walks 19 blocks for a 7-block job,
-  because it discovers closures by hitting them rather than by checking first. Recovery is not the
-  same as competence.</p>
-</div>
-
-<div class="run win">
-  <header><h3>2. A clean two-leg errand</h3><span class="tag win">optimal</span></header>
-  <div class="meta">Gemini 3.1 Flash Live &middot; long horizon &middot; both legs &middot; 11 blocks against 11 optimal &middot; 7 min 18 s</div>
-  <audio controls preload="none" src="assets/audio/errand.mp3"></audio>
-  <p class="hint">The walker reaches Grand Central Market, then reveals they also need the United
-  Nations visitor entrance. The copilot re-plans from the new position and walks the second leg at
-  exactly optimal length.</p>
-</div>
-
-<div class="run loss">
-  <header><h3>3. Twenty minutes, four blocks short</h3><span class="tag loss">clock expired</span></header>
-  <div class="meta">GPT-Realtime 2.1 mini &middot; base &middot; did not arrive &middot; 15 blocks against 5 optimal &middot; 20 min, capped</div>
-  <audio controls preload="none" src="assets/audio/stall.mp3"></audio>
-  <p class="hint">The same task as a five-block walk. The copilot sends the walker west to 5th
-  Avenue and back twice inside two minutes running the same guess-and-check test, and returns to
-  Madison and E 43rd six times. It never sends them anywhere wrong. It simply never converges. This
-  is what the benchmark's failures sound like.</p>
-</div>
-</section>
-
-<section id="results">
-<p class="kicker">Results</p>
-<h2>Five models, one task</h2>
-<p>Realistic channel, 45 conversations per model. <b>Arrived</b> is the graded goal check.
-<b>pass@1</b> additionally requires route efficiency at or above 0.75. Intervals are 95 percent
-Wilson score.</p>
-
-<div class="scroll"><table>
-<caption>Wilson intervals on n=45 per model. Explore share is exploratory guidance moves over total
-guidance moves, pooled per model.</caption>
-<tr><th>model</th><th>arrived</th><th>pass@1</th><th>explore %</th><th>hit the cap</th></tr>
-<tr><td>Gemini 3.1 Flash Live</td>
-  <td class="hi">0.978 <span class="ci">[0.88, 1.00]</span></td>
-  <td>0.489 <span class="ci">[0.35, 0.63]</span></td><td class="hi">16.2</td><td class="hi">4%</td></tr>
-<tr><td>Grok Voice</td>
-  <td>0.867 <span class="ci">[0.74, 0.94]</span></td>
-  <td class="hi">0.533 <span class="ci">[0.39, 0.67]</span></td><td>22.7</td><td>33%</td></tr>
-<tr><td>GPT-Realtime 2.1</td>
-  <td>0.400 <span class="ci">[0.27, 0.55]</span></td>
-  <td>0.200 <span class="ci">[0.11, 0.34]</span></td><td>43.4</td><td>58%</td></tr>
-<tr><td>GPT-Realtime 2.1 mini</td>
-  <td>0.311 <span class="ci">[0.19, 0.46]</span></td>
-  <td>0.089 <span class="ci">[0.03, 0.21]</span></td><td>40.3</td><td>82%</td></tr>
-<tr><td>Nova 2 Sonic</td>
-  <td>0.000 <span class="ci">[0.00, 0.08]</span></td>
-  <td>0.000 <span class="ci">[0.00, 0.08]</span></td><td>51.2</td><td>91%</td></tr>
-</table></div>
-
-<p>Ranking on pass@1 is unchanged at every efficiency threshold from 0.5 to 1.0, so no conclusion
-depends on where that line sits. It sets the level, not the order.</p>
-</section>
-
-<section id="findings">
-<p class="kicker">Findings</p>
-<h2>Three things the corpus says</h2>
-
-<h3>1. Nobody gets lost. They run out of time.</h3>
-<p>110 of the 225 conversations did not reach the destination. <b>104 of those, 95 percent, were
-still walking when the twenty-minute simulated clock stopped.</b> Six went to the wrong place.</p>
-<div class="callout"><p>Every zero in the results table is therefore a lower bound. A zero means
-"did not finish in twenty minutes", not "went the wrong way". The binding constraint on a voice
-copilot is how quickly it can establish and hold a shared picture, not whether it can read a
-map.</p></div>
-
-<h3>2. They know where you are. They do not know which way you face.</h3>
-<p>The copilot can record what it believes about the walker, and every belief is scored against
-ground truth, which makes the internal model measurable rather than inferred.</p>
-<figure>
-  <img class="lt" src="assets/img/fig_belief_position_vs_heading_light.png" alt="Position accuracy plotted against heading accuracy for five models, with a breakdown of how often the facing field is left blank">
-  <img class="dk" src="assets/img/fig_belief_position_vs_heading_dark.png" alt="Position accuracy plotted against heading accuracy for five models, with a breakdown of how often the facing field is left blank">
-  <figcaption>Every model places the walker on the right corner 93 to 100 percent of the time. The
-  same models get the facing right 22 to 93 percent of the time.</figcaption>
-</figure>
-<p><b>Most of that gap is silence, not error.</b> Between 27 and 58 percent of recorded beliefs
-leave the facing field blank. Conditional on committing to a direction, four of the five models are
-right 75 to 100 percent of the time. What separates them is whether they track orientation at all,
-not whether they can. Nova is the exception and fails differently: when it does commit it is right
-46 percent of the time, close to chance on a four-way choice.</p>
-
-<h3>3. Guessing is a symptom, not a strategy</h3>
-<figure>
-  <img class="lt" src="assets/img/fig_explore_vs_pass_light.png" alt="Exploratory share of guidance moves plotted against pass at 1, across fifteen model and condition cells">
-  <img class="dk" src="assets/img/fig_explore_vs_pass_dark.png" alt="Exploratory share of guidance moves plotted against pass at 1, across fifteen model and condition cells">
-  <figcaption>Each point is one model in one condition. An exploratory move is one made on an
-  uncertain instruction rather than a confident one.</figcaption>
-</figure>
-<p>A copilot that has lost track of the walker cannot say "turn left and walk one block", so it says
-"try heading that way and tell me what you see". Across models the relationship is real and moderate,
-Spearman rho -0.66 at p = 0.008.</p>
-<div class="callout"><p><b>It does not hold inside a model.</b> Across a single model's three
-conditions the correlation turns positive. Harder tasks do not push a copilot into more guessing;
-they push it into stalling. Exploration tells you which model you are looking at, not which task.</p></div>
-</section>
-
-<section id="scope">
-<p class="kicker">Scope and honesty</p>
-<h2>What this does not show</h2>
-<ul class="tight">
-  <li><b>The cap dominates.</b> With 95 percent of non-arrivals ending at the ceiling, this is as
-  much a throughput benchmark as a navigation one. A different cap gives different numbers, and the
-  reported values are lower bounds.</li>
-  <li><b>Nine scenarios is a small between-scenario sample.</b> pass@k and pass^k are
-  between-scenario quantities, so their intervals resample scenarios and are wide. Single-cell
-  differences between two models are rarely resolvable; claims belong at the model level.</li>
-  <li><b>One tool has a bug that costs the models.</b> <code>directions()</code> mis-resolves the
-  long-horizon destination by two blocks in all three of those scenarios, so part of that
-  condition's failure is ours rather than the model's.</li>
-  <li><b>Ordinary destinations are authored.</b> Landmarks are real; shops and clinics are not. That
-  is deliberate, and it means the world is not a faithful map of Midtown East for any purpose beyond
-  this benchmark.</li>
-  <li><b>No dated model snapshots exist.</b> The realtime providers returned no resolvable build id
-  through our adapters, so the collection window is what should be cited, not a version string.</li>
-  <li><b>Scoring is in blocks, not metres.</b> A route optimal in blocks need not be shortest on the
-  ground, given the 3.38 to 1 aspect ratio.</li>
-</ul>
-
-<h3>Configuration</h3>
-<p>User simulator <code>gpt-5.6-luna</code> at temperature 0, decision model
-<code>claude-haiku-4.5</code>, and the five voice agents as the only variable. A 200 ms discrete
-tick loop with simulated time decoupled from wall clock; both parties emit every tick, so
-interruptions and overlaps arise from the channel rather than from a script. Audio is G.711 mu-law
-at 8 kHz for every model, so no model receives better input than another.</p>
-</section>
-
-</div>
-
-<footer><div class="wrap">
-  <span>225 conversations &middot; realistic channel &middot; 2026-07-28 to 2026-08-04</span>
-  <span>Anonymous project page for double-blind review</span>
-</div></footer>
-
+<!-- The walk renderer. Loaded before the flight so the map tiles can mount the moment their
+     payloads land; if it is missing the flight still runs and the tiles stay as placeholders
+     rather than throwing. -->
+<script src="walkmap.js"></script>
+<script>
+window.__DW_ICONS = {
+  openai: 'img/icons/openai.webp', gemini: 'img/icons/gemini.webp',
+  grok: 'img/icons/grok.webp', nova: 'img/icons/nova.webp',
+};
+</script>
+<script src="data.js"></script>
+<script src="flight.js"></script>
+<script>
+mountFlight(document.getElementById('world'), {
+  shell: 'split',
+  rail: false,
+  hero: { src: 'img/hero.webp', w: 1222, h: 1254 },
+  logo: { src: 'img/hero.webp' },
+  maps: { base: './' },
+  calls: { base: './' },
+  hint: 'scroll',
+  nav: [
+    { label: 'Experience', href: 'index.html' },
+    { label: 'Overview', href: 'index.html#overview' },
+    { label: 'Motivation', href: 'motivation.html' },
+    { label: 'How it works', href: 'setup.html' },
+    { label: 'Voice samples', href: 'samples.html' },
+    { label: 'Metrics', href: 'metrics.html' },
+    { label: 'Leaderboard', href: 'leaderboard.html' },
+  ],
+  video: { src: 'flight.mp4', srcSmall: 'flight-small.mp4', poster: 'img/poster.webp',
+    // One entry per section, in section order. A length mismatch is not a soft
+    // failure: the config is rejected and the film is dropped for the page.
+    stops: [4.00, 19.99, 38.35, 58.49, 83.36, 103.50] },
+  sections: [
+    {
+      id: 'welcome', label: 'Welcome', stage: 'film', still: null,
+      eyebrow: 'Welcome to DuplexWorld',
+      title: 'Can a voice agent help you get through the day?',
+      // The authors stand where the standfirst used to. This page has no `opening` block,
+      // so the landing stop is the only place on it that a byline can live.
+      byline: true,
+      cam: { x: 0.500, y: 0.470, z: 1.00 }, scroll: 2.6, linger: 0.4,
+      accent: 'var(--mag)',
+    },
+    {
+      id: 'duplex', label: 'Both at once', stage: 'film', still: null,
+      eyebrow: 'Why duplex',
+      title: 'Real conversation is not turn by turn.',
+      body: 'People interrupt, agree while the other is still speaking, and start again '
+          + 'before the sentence has landed. The caller here is simulated - one model '
+          + 'writes the words, a second decides when to speak, a third says them out loud '
+          + '- and it is allowed to talk over the agent, because that is where voice '
+          + 'agents actually break.',
+      // The three models are named here in a sentence; the Setup page draws them as the
+      // harness they actually are. A reader who wants that should not have to find it in
+      // the bar.
+      cta: [{ label: 'See the harness', href: 'setup.html' }],
+      cam: { x: 0.500, y: 0.470, z: 1.00 }, scroll: 2.8, linger: 0.4,
+      accent: 'var(--pillar-dynamics)',
+    },
+    {
+      id: 'worlds', label: 'Six worlds', stage: 'film', still: null,
+      eyebrow: 'Six worlds of one day',
+      title: 'Banking, insurance, travel, healthcare, logistics - and a city you have to '
+           + 'walk across.',
+      // The same six globes the overview page carries, drawn by the same builder. Naming
+      // six worlds in a sentence and then showing nothing was the one stop on this page
+      // where the copy did all the work.
+      worlds: [
+        ['Pathfinding', 'img/pathfinding.webp'], ['Banking', 'img/banking.webp'],
+        ['Healthcare', 'img/healthcare.webp'], ['Travel', 'img/travel.webp'],
+        ['Insurance', 'img/insurance.webp'], ['Logistics', 'img/logistics.webp'],
+      ],
+      cam: { x: 0.500, y: 0.470, z: 1.00 }, scroll: 3.4, linger: 0.4,
+      accent: 'var(--viod)',
+    },
+    {
+      id: 'scale', label: 'The scale', stage: 'film', still: null,
+      eyebrow: 'What was run',
+      title: '3,825 scored conversations. 387 hours of speech.',
+      // 144 CAMPAIGNED, not 156 authored. The sentence is about what was run, and it was
+      // reading as though all 156 authored scenarios had been: the other twelve are
+      // Pathfinding variants that are released and not run, which the composition matrix on
+      // the results page states and this line did not.
+      body: 'Eleven conversation types, 144 scenarios campaigned out of 156 authored, five '
+          + 'speech-to-speech systems, one metric suite in three pillars. Every pairing is '
+          + 'run five times, and for the walking world in two acoustic channels - a quiet '
+          + 'one and a street.',
+      // The corpus ring from the overview page. The two totals in the title are the two
+      // numbers this shape divides up, so it belongs beside them rather than four pages
+      // later. Same slices, same builder, so the two pages cannot disagree.
+      ring: {
+        centre: '3,825', centreSub: 'total', keyHead: 'Conversations by world',
+        slices: [
+          ['Banking', 675], ['Insurance', 675], ['Travel', 675],
+          ['Healthcare', 675], ['Logistics', 675], ['Pathfinding', 450],
+        ],
+      },
+      cam: { x: 0.500, y: 0.470, z: 1.00 }, scroll: 3.4, linger: 0.4,
+      accent: 'var(--pillar-agentic)',
+    },
+    {
+      /* THE OVERVIEW, as the last stop of this page rather than a page of its own.
+         ---------------------------------------------------------------------------------
+         Everything above is the argument one beat at a time; this is all of it at once, with
+         the mark in the middle cell. It used to live at overview.html, which meant the one
+         screen that summarises the benchmark was the one screen a reader had to leave the
+         Experience to find. The cells are the overview's own, unchanged, so the two cannot
+         say different things.
+         Full width: eleven type chips and three system plots do not fit beside a film. */
+      id: 'overview', label: 'At a glance', stage: 'film', still: null, block: 'band',
+      cam: { x: 0.500, y: 0.470, z: 1.00 }, scroll: 5.0, linger: 0.42,
+      accent: 'var(--pillar-agentic)',
+      eyebrow: 'DuplexWorld at a glance',
+      title: 'The whole benchmark, on one screen.',
+      cellsMark: 'img/hero.webp',
+      cellsMarkAlt: 'The DuplexWorld mark: the six worlds under one dome',
+    cells: [
+      { label: 'Abstract', wide: true, text:
+        'Six worlds of an ordinary day, eleven conversation types and one twelve-metric '
+        + 'suite in three pillars, held under a single harness. Across 3,825 scored '
+        + 'conversations, none of the five commercial speech-to-speech systems evaluated '
+        + 'exceeds Pass@1 0.490, turn-taking 0.653 or DNSMOS 3.378 pooled over the worlds. '
+        + 'A different system leads each of the three.' },
+      // Figure 2(a)'s third panel, lifted from the submission at print resolution rather
+      // than redrawn: it is a density per world and the paper does not publish the
+      // durations behind it, so drawing our own would be inventing the shape.
+      // The submission's own Figure 1 panel, cropped from the manuscript rather than
+      // redrawn: it already carries the two totals as rings, so the stat rows that used to
+      // sit above it were saying the same thing twice.
+      // Conversations by world, as a ring. Six slices, five of them equal by design, so
+      // there is one shape to read rather than eleven: the point is that the five
+      // enterprise worlds are balanced and Pathfinding is two thirds their size.
+      // Labelled directly on the arc, no legend, and the counts are stated.
+      // Four figures and one shape. The labels are parallel so the row scans as a set
+      // rather than as three sentences of different lengths.
+      { label: 'The corpus', items: [
+        ['387 h', 'of speech'], ['156', 'scenarios'], ['5', 'systems'],
+      ], ring: {
+        centre: '3,825', centreSub: 'total', keyHead: 'Conversations by world',
+        slices: [
+          ['Banking', 675], ['Insurance', 675], ['Travel', 675],
+          ['Healthcare', 675], ['Logistics', 675], ['Pathfinding', 450],
+        ] } },
+      { label: 'Six worlds', worlds: [
+        ['Pathfinding', 'img/pathfinding.webp'], ['Banking', 'img/banking.webp'],
+        ['Healthcare', 'img/healthcare.webp'], ['Travel', 'img/travel.webp'],
+        ['Insurance', 'img/insurance.webp'], ['Logistics', 'img/logistics.webp'],
+      ] },
+      { label: 'Eleven conversation types', chips: [
+        'Single intent', 'Multi intent', 'Policy refusal', 'Record disambiguation',
+        'Identity verification', 'Guided procedure', 'Mid-call correction',
+        'Suspension', 'Narrative intake', 'Rerouting', 'All-day assistance',
+      ] },
+      { label: 'Pass@1', head: { v: '0.490', who: 'Grok Voice Think Fast 1.0' },
+        plot: { accent: 'var(--pillar-agentic)', dp: 3, max: 0.55, rows: [
+        ['Grok Voice Think Fast 1.0', 0.490, 0.039], ['GPT-Realtime-2.1', 0.433, 0.035],
+        ['Gemini-3.1-Flash-Live', 0.398, 0.039], ['GPT-Realtime-2.1-mini', 0.188, 0.028],
+        ['Nova 2 Sonic', 0.011, 0.007]],
+        note: '0.011: the system that holds the floor without completing tasks.' } },
+      { label: 'Turn-taking', head: { v: '0.653', who: 'GPT-Realtime-2.1' },
+        plot: { accent: 'var(--pillar-dynamics)', dp: 3, max: 0.72, rows: [
+        ['GPT-Realtime-2.1', 0.653, 0.018], ['Grok Voice Think Fast 1.0', 0.635, 0.015],
+        ['Nova 2 Sonic', 0.566, 0.021], ['GPT-Realtime-2.1-mini', 0.521, 0.025],
+        ['Gemini-3.1-Flash-Live', 0.388, 0.012]] } },
+      { label: 'DNSMOS', head: { v: '3.378', who: 'Gemini-3.1-Flash-Live' },
+        plot: { accent: 'var(--pillar-natural)', dp: 2,
+          note: 'This axis starts at 3.0, not 0: DNSMOS is a 1-to-5 opinion score and the '
+              + 'five systems sit inside a quarter of a point of each other.', base: 3.0, max: 3.45, rows: [
+        ['Gemini-3.1-Flash-Live', 3.378, 0.008], ['GPT-Realtime-2.1', 3.350, 0.004],
+        ['GPT-Realtime-2.1-mini', 3.334, 0.009], ['Nova 2 Sonic', 3.172, 0.015],
+        ['Grok Voice Think Fast 1.0', 3.127, 0.007]] } },
+      // The ninth cell. The grid was eight tiles in a nine-cell matrix, so the bottom
+      // right corner was simply missing. It carries the sentence the three plots beside it
+      // add up to - the paper's own thesis, already stated in the abstract tile - with the
+      // system that holds each pillar. No new claim: the same three numbers, named.
+      { label: 'The finding', text: 'A different system leads each of the three.',
+        leads: [
+          ['Agentic capability', 'Pass@1 0.490', 'Grok Voice Think Fast 1.0'],
+          ['Conversational dynamics', 'Turn-taking 0.653', 'GPT-Realtime-2.1'],
+          ['Naturalness', 'DNSMOS 3.378', 'Gemini-3.1-Flash-Live'],
+        ] },
+    ],
+    },
+    {
+      id: 'out', label: 'Duplex World', stage: 'film', still: null, layout: 'hero',
+      block: 'out',
+      cam: { x: 0.500, y: 0.480, z: 1.02 }, scroll: 1.8, linger: 0.3,
+      accent: 'var(--mag)',
+      next: { kicker: 'Next', label: 'What is actually being tested', href: 'setup.html' },
+    },
+  ],
+});
+</script>
 </body>
 </html>
